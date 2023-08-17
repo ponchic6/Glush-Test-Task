@@ -27,10 +27,6 @@ public class ManageDialogWindowByKeyboard : MonoBehaviour
             {
                 _audioSource.Stop();
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                _audioSource.Stop();
-            }
         }
     }
 }

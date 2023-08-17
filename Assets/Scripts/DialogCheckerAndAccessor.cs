@@ -5,10 +5,13 @@ using UnityEngine.UI;
 public class DialogCheckerAndAccessor : MonoBehaviour
 {
     [SerializeField] private Canvas _checkerCanvas;
-    [SerializeField] private Canvas _dialogCanvas;
     [SerializeField] private PlayerController _playerController;
     [SerializeField] private Text _interactionText;
     [SerializeField] private Camera _camera;
+    private AudioSource _audioSource;
+    private Canvas _dialogCanvas;
+    private Animator _animator;
+
     private Ray _ray;
     private RaycastHit _hit;
     private bool _isDialog = false;
@@ -53,9 +56,14 @@ public class DialogCheckerAndAccessor : MonoBehaviour
 
     private void ExitFromDialog()
     {
+        _animator.SetBool("IsDialog", false);
+        _animator = null;
+        _audioSource.Stop();
+        _audioSource = null;
         _isDialog = false;
         _checkerCanvas.enabled = true;
         _dialogCanvas.enabled = false;
+        _dialogCanvas.transform.GetComponentInChildren<ManageDialogWindowByKeyboard>().enabled = false;
         _dialogCanvas = null;
         _playerController.enabled = true;
         Cursor.visible = false;
@@ -63,13 +71,18 @@ public class DialogCheckerAndAccessor : MonoBehaviour
     }
 
     private void EnterToDialog()
-    {
+    {   
+        _animator = _hit.collider.GetComponentInChildren<Animator>();
+        _animator.SetBool("IsDialog", true);
         _dialogCanvas = _hit.collider.gameObject.transform.GetComponentInChildren<Canvas>();
+        _audioSource = _hit.collider.gameObject.transform.GetComponentInChildren<AudioSource>();
         _isDialog = true;
         _checkerCanvas.enabled = false;
         _dialogCanvas.enabled = true;
+        _dialogCanvas.transform.GetComponentInChildren<ManageDialogWindowByKeyboard>().enabled = true;
         _playerController.enabled = false;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
 }
+
